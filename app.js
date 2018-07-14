@@ -13,40 +13,32 @@ var campgroundSchema = new mongoose.Schema({
 });
 
 var Campground = mongoose.model("Campground",campgroundSchema);
-
-Campground.create(
-    {
-        name: "Granite Hill",
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeGqaQIuOnLN4ezWn4OaEYZOJxIFSg2vV7WGjFGAzRjMbOFsIdJw"
-    }, 
-    function(err, campground){
-        if (err) {
-            console.log(err);
-        } 
-        else {
-            console.log("New campground created");
-            console.log(campground);
-        }
-    });
     
-var campgrounds = [
-    {name:"Salmon Creek" , image: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Campground.jpg"},
-    {name:"Granite Hill" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeGqaQIuOnLN4ezWn4OaEYZOJxIFSg2vV7WGjFGAzRjMbOFsIdJw"},
-    {name:"Mountain Goat's Rest" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu2z1lsEUAANdmeT_yi3euMpgH-dwTS8VNr5veav7j_AeC6Byd"},
-    {name:"Salmon Creek" , image: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Campground.jpg"},
-    {name:"Granite Hill" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeGqaQIuOnLN4ezWn4OaEYZOJxIFSg2vV7WGjFGAzRjMbOFsIdJw"},
-    {name:"Mountain Goat's Rest" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu2z1lsEUAANdmeT_yi3euMpgH-dwTS8VNr5veav7j_AeC6Byd"},
-    {name:"Salmon Creek" , image: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Campground.jpg"},
-    {name:"Granite Hill" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeGqaQIuOnLN4ezWn4OaEYZOJxIFSg2vV7WGjFGAzRjMbOFsIdJw"},
-    {name:"Mountain Goat's Rest" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu2z1lsEUAANdmeT_yi3euMpgH-dwTS8VNr5veav7j_AeC6Byd"}
-];
+// var campgrounds = [
+//     {name:"Salmon Creek" , image: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Campground.jpg"},
+//     {name:"Granite Hill" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeGqaQIuOnLN4ezWn4OaEYZOJxIFSg2vV7WGjFGAzRjMbOFsIdJw"},
+//     {name:"Mountain Goat's Rest" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu2z1lsEUAANdmeT_yi3euMpgH-dwTS8VNr5veav7j_AeC6Byd"},
+//     {name:"Salmon Creek" , image: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Campground.jpg"},
+//     {name:"Granite Hill" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeGqaQIuOnLN4ezWn4OaEYZOJxIFSg2vV7WGjFGAzRjMbOFsIdJw"},
+//     {name:"Mountain Goat's Rest" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu2z1lsEUAANdmeT_yi3euMpgH-dwTS8VNr5veav7j_AeC6Byd"},
+//     {name:"Salmon Creek" , image: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Campground.jpg"},
+//     {name:"Granite Hill" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeGqaQIuOnLN4ezWn4OaEYZOJxIFSg2vV7WGjFGAzRjMbOFsIdJw"},
+//     {name:"Mountain Goat's Rest" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu2z1lsEUAANdmeT_yi3euMpgH-dwTS8VNr5veav7j_AeC6Byd"}
+// ];
 
 app.get("/", function(req, res){
     res.render("home");
 });
 
 app.get("/campgrounds", function(req, res){
-    res.render("campgrounds", {campgrounds: campgrounds});
+    Campground.find({},function(err, campgrounds){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.render("campgrounds", {campgrounds: campgrounds});
+        }
+    });
 });
 
 app.get("/campgrounds/new", function(req, res) {
@@ -58,9 +50,15 @@ app.post("/campgrounds", function(req, res){
     var name = req.body.name;
     var image = req.body.image;
     var newCampground = {name: name, image: image};
-    campgrounds.push(newCampground);
-    //redirect to campgrounds page
-    res.redirect("/campgrounds");
+    Campground.create(newCampground, function(err, campground){
+        if (err) {
+            console.log(err);
+        } 
+        else {
+            //redirect to campgrounds page
+            res.redirect("/campgrounds");
+        }
+    });
 });
 
 app.listen(process.env.PORT, process.env.IP, function(){
