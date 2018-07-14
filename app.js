@@ -1,10 +1,34 @@
-var express = require("express");
-var app = express();
-var bodyParser = require("body-parser");
+var express = require("express"),
+    app = express(),
+    bodyParser = require("body-parser"),
+    mongoose = require("mongoose");
 
+mongoose.connect("mongodb://localhost:27017/yelp_camp", { useNewUrlParser: true }); //27017 is MongoDB's default port on which mongod is running.
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
+var campgroundSchema = new mongoose.Schema({
+    name: String,
+    image: String
+});
+
+var Campground = mongoose.model("Campground",campgroundSchema);
+
+Campground.create(
+    {
+        name: "Granite Hill",
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeGqaQIuOnLN4ezWn4OaEYZOJxIFSg2vV7WGjFGAzRjMbOFsIdJw"
+    }, 
+    function(err, campground){
+        if (err) {
+            console.log(err);
+        } 
+        else {
+            console.log("New campground created");
+            console.log(campground);
+        }
+    });
+    
 var campgrounds = [
     {name:"Salmon Creek" , image: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Campground.jpg"},
     {name:"Granite Hill" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeGqaQIuOnLN4ezWn4OaEYZOJxIFSg2vV7WGjFGAzRjMbOFsIdJw"},
